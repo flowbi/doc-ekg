@@ -1,0 +1,10 @@
+psycopg2-binary>=2.9,<3
+pypdf>=5,<7
+python-docx>=1.2,<2
+python-pptx>=1.0,<2
+# EKG's graph package imports its Neptune module on initialization.
+boto3>=1.35
+requests>=2.31
+# Install the dependencies for your chosen graph/log target from flowbi/ekg.
+# Neo4j: neo4j; Neptune: requests, boto3; Cosmos: gremlinpython;
+# Spanner: google-cloud-spanner; GML/GraphML: networkx.
