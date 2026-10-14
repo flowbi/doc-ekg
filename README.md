@@ -55,7 +55,9 @@ Customer,Acme,Customer_12345
 
 `ekg_id` must be the exact node ID produced by EKG's `id_column_expr` or ID-component logic. The script checks the graph first, then uses this CSV only when lookup returns no match. Verify CSV IDs against the graph before a run; EKG's target interface does not expose a portable node-existence lookup for supplied IDs, and some adapters silently skip an edge when an endpoint is absent.
 
-Each file becomes a `Document`, each text part a `DocumentChunk`, linked by `CONTAINS`. A matched instance creates a `MENTIONS` edge from the chunk to the **existing typed graph node**, without changing that node. An unmatched instance becomes a new `DocumentEntity` with a concept tag, so its evidence is retained for review. Extracted relationships connect the resolved endpoints, with source URI and exact quoted evidence. IDs are deterministic across repeated runs of unchanged files. If a file changes, old chunk and evidence nodes remain; clean them up with a separately designed retention policy if needed.
+Each file becomes a `Document`, each text part a `DocumentChunk`, linked by `CONTAINS`. A matched instance creates a `MENTIONS` edge from the chunk to the **existing typed graph node**, without changing that node. An unmatched instance becomes a new `DocumentEntity` with a concept tag, so its evidence is retained for review.
+
+Each extracted relationship connects the resolved endpoints directly and also has a traversable provenance path: `Document → CONTAINS → DocumentChunk → ASSERTS_RELATION → ExtractedRelation`. The `ExtractedRelation` node has `RELATION_SUBJECT` and `RELATION_OBJECT` edges to the same endpoints. The direct relationship edge stores `document_id`, `chunk_id`, and `evidence_id`; the evidence node stores the corresponding `relation_id` and exact quoted text. IDs are deterministic across repeated runs of unchanged files. If a file changes, old chunk and evidence nodes remain; clean them up with a separately designed retention policy if needed.
 
 ## Configuration and logging
 

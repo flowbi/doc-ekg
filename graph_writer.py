@@ -82,5 +82,22 @@ class GraphWriter:
             source_id, target_id = entity_ids[relation.source], entity_ids[relation.target]
             relation_id = prefix + "relation:" + digest(chunk_id, source_id, target_id,
                                                          relation.predicate, relation.evidence)
+            evidence_id = prefix + "relation-evidence:" + digest(relation_id)
+            self.target.upsert_node(evidence_id, "ExtractedRelation", {
+                "predicate": relation.predicate,
+                "evidence": relation.evidence,
+                "source_uri": chunk.source,
+                "document_id": doc_id,
+                "chunk_id": chunk_id,
+                "relation_id": relation_id,
+            })
+            self.target.upsert_edge(prefix + "asserts:" + digest(chunk_id, evidence_id),
+                                    "ASSERTS_RELATION", chunk_id, evidence_id, {})
+            self.target.upsert_edge(prefix + "subject:" + digest(evidence_id, source_id),
+                                    "RELATION_SUBJECT", evidence_id, source_id, {})
+            self.target.upsert_edge(prefix + "object:" + digest(evidence_id, target_id),
+                                    "RELATION_OBJECT", evidence_id, target_id, {})
             self.target.upsert_edge(relation_id, relation.predicate, source_id, target_id,
-                                    {"evidence": relation.evidence, "source_uri": chunk.source})
+                                    {"evidence": relation.evidence, "source_uri": chunk.source,
+                                     "document_id": doc_id, "chunk_id": chunk_id,
+                                     "evidence_id": evidence_id})
